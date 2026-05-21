@@ -8,10 +8,10 @@ const SPECIAL_SPAWN_CHANCE = 0.05; // 每秒嘗試產出的機率
 
 // 圖片配置
 const ASSETS = {
-  weiHead: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Wei',
-  mengHead: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Meng',
+  weiHead: '/wei.svg',
+  mengHead: '/meng.svg',
   body: 'https://api.iconify.design/flat-color-icons/like.svg',
-  cake: 'https://api.iconify.design/fxemoji/strawberrycake.svg',
+  cake: '/cake.svg',
   ai: 'https://api.iconify.design/flat-color-icons/chip.svg',
   piano: 'https://api.iconify.design/flat-color-icons/music.svg',
   gift: 'https://api.iconify.design/flat-color-icons/gift.svg'
@@ -34,7 +34,7 @@ const getResponsiveCellSize = () => {
 };
 
 // 遊戲狀態
-const CELL_SIZE = ref(20);
+const CELL_SIZE = ref(40);
 const snake = ref([{ x: 10, y: 10 }]);
 const direction = ref({ x: 0, y: 0 });
 const nextDirection = ref({ x: 0, y: -1 });
@@ -270,7 +270,8 @@ const transitionSpeed = computed(() => { const ms = isSlowMo.value ? INITIAL_SPE
             left: cake.x * CELL_SIZE + 'px', 
             top: cake.y * CELL_SIZE + 'px',
             width: CELL_SIZE + 'px',
-            height: CELL_SIZE + 'px'
+            height: CELL_SIZE + 'px',
+            transform: 'scale(1.4)'
           }">
             <img :src="ASSETS.cake" alt="cake" />
           </div>
@@ -280,7 +281,8 @@ const transitionSpeed = computed(() => { const ms = isSlowMo.value ? INITIAL_SPE
             left: specialItem.x * CELL_SIZE + 'px', 
             top: specialItem.y * CELL_SIZE + 'px',
             width: CELL_SIZE + 'px',
-            height: CELL_SIZE + 'px'
+            height: CELL_SIZE + 'px',
+            transform: 'scale(1.6)'
           }">
             <img :src="ASSETS[specialItem.type as keyof typeof ASSETS]" alt="special" />
           </div>
@@ -294,16 +296,18 @@ const transitionSpeed = computed(() => { const ms = isSlowMo.value ? INITIAL_SPE
             :style="{ 
               left: segment.x * CELL_SIZE + 'px', 
               top: segment.y * CELL_SIZE + 'px',
-              width: (index === 0 ? CELL_SIZE * 1.3 : CELL_SIZE) + 'px',
-              height: (index === 0 ? CELL_SIZE * 1.3 : CELL_SIZE) + 'px',
+              width: CELL_SIZE + 'px',
+              height: CELL_SIZE + 'px',
               zIndex: index === 0 ? 10 : 5,
               transitionDuration: transitionSpeed,
-              transform: index === 0 ? 'translate(-15%, -15%)' : 'none'
+              transform: index === 0 ? 'scale(1.8)' : 'scale(1.2)'
             }"
           >
             <template v-if="index === 0">
               <img :src="selectedCharacter === 'wei' ? ASSETS.weiHead : ASSETS.mengHead" class="head-img" />
-              <span class="char-tag" :style="{ fontSize: Math.max(CELL_SIZE/3, 8) + 'px' }">{{ selectedCharacter === 'wei' ? '崴' : '孟' }}</span>
+              <span class="char-tag" :style="{ fontSize: Math.max(CELL_SIZE/3, 8) + 'px', transform: 'scale(0.8)' }">
+                {{ selectedCharacter === 'wei' ? '崴' : '孟' }}
+              </span>
             </template>
             <img v-else :src="ASSETS.body" class="body-img" />
           </div>
