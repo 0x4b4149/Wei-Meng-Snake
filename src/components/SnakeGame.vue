@@ -50,7 +50,7 @@ const heartParticles = ref<HeartParticle[]>([]);
 const initHeartParticles = () => {
   heartParticles.value = Array.from({ length: 12 }, (_, i) => ({
     id: i,
-    char: HEART_CHARS[i % HEART_CHARS.length],
+    char: HEART_CHARS[i % HEART_CHARS.length] || '💕',
     left: (i * 8.5 + Math.random() * 4) + '%',
     animationDelay: (i * 0.8 + Math.random() * 0.5) + 's',
     animationDuration: (7 + Math.random() * 5) + 's',
@@ -136,7 +136,7 @@ const spawnSpecialItem = () => {
   if (specialItem.value || isPaused.value || showStartScreen.value) return;
   if (Math.random() < SPECIAL_SPAWN_CHANCE) {
     const types = ['ai', 'piano', 'gift'];
-    const type = types[Math.floor(Math.random() * types.length)];
+    const type = types[Math.floor(Math.random() * types.length)] || 'ai';
     while (true) {
       const pos = {
         x: Math.floor(Math.random() * GRID_SIZE),
@@ -158,6 +158,7 @@ const move = () => {
 
   if (isAutoPilot.value) {
     const head = snake.value[0];
+    if (!head) return;
     const target = specialItem.value || cake.value;
     if (head.x < target.x && direction.value.x !== -1) nextDirection.value = { x: 1, y: 0 };
     else if (head.x > target.x && direction.value.x !== 1) nextDirection.value = { x: -1, y: 0 };
@@ -240,7 +241,7 @@ const activateSlowMo = () => {
 
 const activateTwister = () => {
   showTwister.value = true;
-  twisterText.value = TONGUE_TWISTERS[Math.floor(Math.random() * TONGUE_TWISTERS.length)];
+  twisterText.value = TONGUE_TWISTERS[Math.floor(Math.random() * TONGUE_TWISTERS.length)] || '';
   message.value = '挑戰！得分加倍 🎁';
   scoreMultiplier.value = 2;
   if (twisterTimeout.value) clearTimeout(twisterTimeout.value);
