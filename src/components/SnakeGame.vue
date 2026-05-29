@@ -64,7 +64,8 @@ const getResponsiveCellSize = () => {
   const vh = window.innerHeight;
   const vw = window.innerWidth;
   const isDesktop = vw > 768;
-  const availableHeight = vh - 140;
+  // 預留更多高度給標題、邊距和控制提示，避免被切掉
+  const availableHeight = vh - 220;
   // 左邊排行榜 + 右邊留言板 大約各佔 220px 加上間距，共預留 500px
   const availableWidth = isDesktop ? vw - 500 : vw - 40;
   const minDim = Math.min(availableHeight, availableWidth);
@@ -530,18 +531,19 @@ onUnmounted(() => {
 
 <style scoped>
 .app-wrapper {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
   position: relative;
 }
 
 .main-layout {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   justify-content: center;
   gap: 24px;
   z-index: 1;
