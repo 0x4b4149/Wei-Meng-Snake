@@ -1,42 +1,23 @@
-# Snake
+# Evolved Snake
 
-This template should help get you started developing with Vue 3 in Vite.
+## Vercel Link
+https://wei-meng-snake.vercel.app/
 
-## Recommended IDE Setup
+## Design Concept
+Q:我的進化版 Snake 改變了原版的哪一個玩法？
+A:傳統貪食蛇只有吃蘋果變長，但我的有特殊隨機道具系統，增加遊戲不同的玩法
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Q:玩家需要做什麼新的判斷或操作？
+A:畫面中除了基本食物（蛋糕），會隨機出現三種特殊道具
+1.AI 道具 (自動導航):吃下後蛇會自動尋路 5 秒。
+2.鋼琴道具 (孟寶慢動作):吃下後遊戲速度會大幅變慢 5 秒
+3.禮物道具:吃下後 5 秒內所有得分兩倍。
 
-## Recommended Browser Setup
+Q:我希望玩家玩完後覺得哪裡和普通 Snake 不一樣？
+A:這不是遊戲，是專屬的崴孟浪漫禮物，吃到食物時彈出的「它的顆粒好好吃」，讓玩家覺得這是一個有溫度的貪食蛇，普通的貪食蛇死掉就沒了，但這裡死掉後，會用溫柔的語氣鼓勵你，分數還能上榜。
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## How My Version Is Different
+加入玩家選擇角色機制，以及除了原版的單一目標外，加入了其他道具，例如雙倍分數、自動導航、慢動作。
 
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
+## How To Play
+WSAD 對應操控 上下左右移動
