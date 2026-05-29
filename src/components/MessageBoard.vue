@@ -130,7 +130,8 @@ const handleKeydown = (e: KeyboardEvent) => {
     0 6px 28px rgba(255, 105, 180, 0.13),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
   font-family: 'Nunito', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
-  max-height: 90vh;
+  height: calc(100vh - 120px);
+  max-height: 850px;
   animation: slideInRight 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 

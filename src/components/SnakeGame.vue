@@ -66,8 +66,8 @@ const getResponsiveCellSize = () => {
   const isDesktop = vw > 768;
   // 預留更多高度給標題、邊距和控制提示，避免被切掉
   const availableHeight = vh - 220;
-  // 左邊排行榜 + 右邊留言板 大約各佔 220px 加上間距，共預留 500px
-  const availableWidth = isDesktop ? vw - 500 : vw - 40;
+  // 左邊排行榜 + 右邊留言板 大約各佔 220px 加上四個間距，預留 600px 確保不會被切到左右邊
+  const availableWidth = isDesktop ? vw - 600 : vw - 40;
   const minDim = Math.min(availableHeight, availableWidth);
   return Math.max(Math.floor(minDim / GRID_SIZE), 10);
 };

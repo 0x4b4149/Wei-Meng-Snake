@@ -93,8 +93,9 @@ const isEmpty = computed(() => sortedEntries.value.length === 0);
     0 6px 28px rgba(255, 105, 180, 0.13),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
   font-family: 'Nunito', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
-  /* 高度跟隨遊戲容器對齊，但有最大最小限制 */
-  max-height: 90vh;
+  /* 高度固定，但有最大限制 */
+  height: calc(100vh - 120px);
+  max-height: 850px;
   overflow: hidden;
   animation: slideInLeft 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
