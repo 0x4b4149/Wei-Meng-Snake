@@ -27,7 +27,8 @@ const TONGUE_TWISTERS = [
 const getResponsiveCellSize = () => {
   const vh = window.innerHeight;
   const vw = window.innerWidth;
-  const availableHeight = vh - 120;
+  // 為了避免超出螢幕，扣除標題、提示字元與內距的高度 (約 140px) 與寬度 (約 40px)
+  const availableHeight = vh - 140;
   const availableWidth = vw - 40;
   const minDim = Math.min(availableHeight, availableWidth);
   return Math.max(Math.floor(minDim / GRID_SIZE), 10);
@@ -40,6 +41,7 @@ const direction = ref({ x: 0, y: 0 });
 const nextDirection = ref({ x: 0, y: -1 });
 const cake = ref({ x: 5, y: 5 }); // 永遠存在的蛋糕
 const specialItem = ref<{ x: number, y: number, type: string } | null>(null); // 偶爾出現的道具
+const specialItemTimeout = ref<number | null>(null);
 
 const score = ref(0);
 const scoreMultiplier = ref(1);
@@ -57,6 +59,11 @@ const isAutoPilot = ref(false);
 const isSlowMo = ref(false);
 const showTwister = ref(false);
 const twisterText = ref('');
+
+// 特殊效果的 Timeouts
+const autoPilotTimeout = ref<number | null>(null);
+const slowMoTimeout = ref<number | null>(null);
+const twisterTimeout = ref<number | null>(null);
 
 const generateCake = () => {
   while (true) {
@@ -85,8 +92,10 @@ const spawnSpecialItem = () => {
       };
       if (!snake.value.some(s => s.x === pos.x && s.y === pos.y) && (pos.x !== cake.value.x || pos.y !== cake.value.y)) {
         specialItem.value = { ...pos, type };
+        
+        if (specialItemTimeout.value) clearTimeout(specialItemTimeout.value);
         // 10 秒後沒吃到就消失
-        setTimeout(() => { specialItem.value = null; }, 10000);
+        specialItemTimeout.value = window.setTimeout(() => { specialItem.value = null; }, 10000);
         break;
       }
     }
@@ -126,6 +135,7 @@ const move = () => {
   } else if (specialItem.value && newHead.x === specialItem.value.x && newHead.y === specialItem.value.y) {
     handleEat(specialItem.value.type);
     specialItem.value = null;
+    if (specialItemTimeout.value) clearTimeout(specialItemTimeout.value);
   } else {
     snake.value.pop();
   }
@@ -152,14 +162,16 @@ const triggerMeme = () => { showMemeText.value = true; setTimeout(() => { showMe
 const activateAutoPilot = () => {
   isAutoPilot.value = true;
   message.value = '崴寶 AI 導航中！💻';
-  setTimeout(() => { isAutoPilot.value = false; message.value = ''; }, 5000);
+  if (autoPilotTimeout.value) clearTimeout(autoPilotTimeout.value);
+  autoPilotTimeout.value = window.setTimeout(() => { isAutoPilot.value = false; message.value = ''; }, 5000);
 };
 
 const activateSlowMo = () => {
   isSlowMo.value = true;
   message.value = '孟寶音樂慢動作！🎹';
   resetInterval();
-  setTimeout(() => {
+  if (slowMoTimeout.value) clearTimeout(slowMoTimeout.value);
+  slowMoTimeout.value = window.setTimeout(() => {
     isSlowMo.value = false;
     message.value = '';
     if (!isPaused.value) resetInterval();
@@ -171,7 +183,8 @@ const activateTwister = () => {
   twisterText.value = TONGUE_TWISTERS[Math.floor(Math.random() * TONGUE_TWISTERS.length)];
   message.value = '挑戰！得分加倍 🎁';
   scoreMultiplier.value = 2; // 分數加倍
-  setTimeout(() => {
+  if (twisterTimeout.value) clearTimeout(twisterTimeout.value);
+  twisterTimeout.value = window.setTimeout(() => {
     showTwister.value = false;
     message.value = '';
     scoreMultiplier.value = 1;
@@ -194,6 +207,16 @@ const startGame = () => {
     isGameOver.value = false;
     generateCake();
     specialItem.value = null;
+    message.value = '';
+    
+    // 重置特殊狀態
+    isAutoPilot.value = false;
+    isSlowMo.value = false;
+    showTwister.value = false;
+    if (autoPilotTimeout.value) clearTimeout(autoPilotTimeout.value);
+    if (slowMoTimeout.value) clearTimeout(slowMoTimeout.value);
+    if (twisterTimeout.value) clearTimeout(twisterTimeout.value);
+    if (specialItemTimeout.value) clearTimeout(specialItemTimeout.value);
   }
   isPaused.value = false;
   resetInterval();
@@ -362,7 +385,7 @@ const transitionSpeed = computed(() => { const ms = isSlowMo.value ? INITIAL_SPE
   font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
   color: #ff69b4;
   background-color: #fff;
-  padding: 20px;
+  padding: 15px 20px;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(255, 182, 193, 0.4);
   margin: auto;
@@ -370,12 +393,12 @@ const transitionSpeed = computed(() => { const ms = isSlowMo.value ? INITIAL_SPE
 
 .game-header {
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   width: 100%;
 }
 
 h1 {
-  font-size: 1.4rem;
+  font-size: 1.8rem;
   margin: 0;
   text-shadow: 1px 1px #ffe4e1;
 }
@@ -384,7 +407,7 @@ h1 {
   display: flex;
   justify-content: space-around;
   font-weight: bold;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   margin-top: 5px;
   min-height: 1.5em;
 }
