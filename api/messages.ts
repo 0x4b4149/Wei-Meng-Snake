@@ -1,4 +1,6 @@
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
+
+const kv = Redis.fromEnv();
 
 const MAX_MESSAGES = 50;
 const MESSAGES_KEY = 'wm_snake:messages';
