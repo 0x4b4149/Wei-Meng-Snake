@@ -301,14 +301,14 @@ const pauseGame = () => {
   if (specialSpawnInterval.value) clearInterval(specialSpawnInterval.value);
 };
 
-const endGame = () => {
+const endGame = async () => {
   isGameOver.value = true;
   isPaused.value = true;
   if (gameInterval.value) clearInterval(gameInterval.value);
   if (specialSpawnInterval.value) clearInterval(specialSpawnInterval.value);
   message.value = `${props.playerName}，沒關係，下次再努力！❤️`;
 
-  const id = addEntry(props.playerName, score.value, selectedCharacter.value);
+  const id = await addEntry(props.playerName, score.value, selectedCharacter.value);
   if (id) {
     latestEntryId.value = id;
   }

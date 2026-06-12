@@ -6,7 +6,7 @@ const props = defineProps<{
   currentPlayerName: string;
 }>();
 
-const { sortedMessages, addMessage, clearMessages } = useMessageBoard();
+const { sortedMessages, addMessage } = useMessageBoard();
 
 const newMessage = ref('');
 const newRating = ref(0);
@@ -51,12 +51,6 @@ const handleKeydown = (e: KeyboardEvent) => {
         <span class="mb-icon">💌</span>
         留言板
       </h2>
-      <button
-        v-if="sortedMessages.length > 0"
-        class="mb-clear-btn"
-        title="清空留言"
-        @click="clearMessages"
-      >🗑️</button>
     </div>
 
     <div class="mb-list-wrapper">
@@ -169,21 +163,7 @@ const handleKeydown = (e: KeyboardEvent) => {
   to   { transform: translateY(-3px); }
 }
 
-.mb-clear-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 0.85rem;
-  opacity: 0.45;
-  transition: all 0.2s ease;
-  padding: 2px;
-  border-radius: 6px;
-}
 
-.mb-clear-btn:hover {
-  opacity: 0.9;
-  transform: scale(1.1);
-}
 
 /* ====== 留言列表 ====== */
 .mb-list-wrapper {

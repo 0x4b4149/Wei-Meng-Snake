@@ -8,26 +8,21 @@ export interface MessageEntry {
   timestamp: number;
 }
 
-const STORAGE_KEY = 'wm_snake_messages';
-const MAX_MESSAGES = 50;
-
 const messages = ref<MessageEntry[]>([]);
 
-const loadFromStorage = () => {
+const fetchMessages = async () => {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    messages.value = raw ? JSON.parse(raw) : [];
-  } catch {
-    messages.value = [];
+    const res = await fetch('/api/messages');
+    if (res.ok) {
+      messages.value = await res.json();
+    }
+  } catch (error) {
+    console.error('Failed to fetch messages:', error);
   }
 };
 
-const saveToStorage = () => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(messages.value));
-};
-
 // 初始載入
-loadFromStorage();
+fetchMessages();
 
 export const useMessageBoard = () => {
   // 依時間舊到新排序，最新的在最下面
@@ -35,34 +30,23 @@ export const useMessageBoard = () => {
     [...messages.value].sort((a, b) => a.timestamp - b.timestamp)
   );
 
-  const addMessage = (name: string, content: string, rating: number = 0) => {
+  const addMessage = async (name: string, content: string, rating: number = 0) => {
     if (!content.trim()) return;
 
-    const newMsg: MessageEntry = {
-      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-      name,
-      content: content.trim(),
-      rating,
-      timestamp: Date.now(),
-    };
+    try {
+      const res = await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, content: content.trim(), rating }),
+      });
 
-    messages.value.push(newMsg);
-
-    // 只保留最近的 MAX_MESSAGES 筆
-    if (messages.value.length > MAX_MESSAGES) {
-      // 依照時間排序，保留最新的
-      messages.value = [...messages.value]
-        .sort((a, b) => b.timestamp - a.timestamp)
-        .slice(0, MAX_MESSAGES);
+      if (res.ok) {
+        await fetchMessages();
+      }
+    } catch (error) {
+      console.error('Failed to add message:', error);
     }
-
-    saveToStorage();
   };
 
-  const clearMessages = () => {
-    messages.value = [];
-    saveToStorage();
-  };
-
-  return { sortedMessages, addMessage, clearMessages };
+  return { sortedMessages, addMessage };
 };

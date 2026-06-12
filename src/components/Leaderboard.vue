@@ -7,7 +7,7 @@ const props = defineProps<{
   latestEntryId?: string; // 剛剛新增的那筆（高亮用）
 }>();
 
-const { sortedEntries, clearLeaderboard } = useLeaderboard();
+const { sortedEntries } = useLeaderboard();
 
 const CHAR_EMOJI: Record<string, string> = {
   wei: '🧑',
@@ -37,12 +37,6 @@ const isEmpty = computed(() => sortedEntries.value.length === 0);
         <span class="lb-crown">👑</span>
         排行榜
       </h2>
-      <button
-        v-if="!isEmpty"
-        class="lb-clear-btn"
-        title="清除排行榜"
-        @click="clearLeaderboard"
-      >🗑️</button>
     </div>
 
     <div v-if="isEmpty" class="lb-empty">
@@ -132,22 +126,7 @@ const isEmpty = computed(() => sortedEntries.value.length === 0);
   to   { transform: translateY(-4px) rotate(5deg); }
 }
 
-.lb-clear-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 0.85rem;
-  opacity: 0.45;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-  padding: 2px 4px;
-  border-radius: 6px;
-  line-height: 1;
-}
 
-.lb-clear-btn:hover {
-  opacity: 0.9;
-  transform: scale(1.1);
-}
 
 /* ====== 空狀態 ====== */
 .lb-empty {
