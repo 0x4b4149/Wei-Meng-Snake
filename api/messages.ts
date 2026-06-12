@@ -1,6 +1,19 @@
 import { Redis } from '@upstash/redis';
 
-const kv = Redis.fromEnv();
+let kvClient: Redis | null = null;
+
+function getRedis() {
+  if (kvClient) return kvClient;
+  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  
+  if (!url || !token) {
+    throw new Error('Redis configuration missing. Check Vercel environment variables.');
+  }
+  
+  kvClient = new Redis({ url, token });
+  return kvClient;
+}
 
 const MAX_MESSAGES = 50;
 const MESSAGES_KEY = 'wm_snake:messages';
@@ -8,6 +21,7 @@ const MESSAGES_KEY = 'wm_snake:messages';
 export default async function handler(req: any, res: any) {
   if (req.method === 'GET') {
     try {
+      const kv = getRedis();
       const messages = await kv.get(MESSAGES_KEY) || [];
       return res.status(200).json(messages);
     } catch (error) {
@@ -35,6 +49,7 @@ export default async function handler(req: any, res: any) {
         timestamp
       };
 
+      const kv = getRedis();
       let messages: any[] = (await kv.get(MESSAGES_KEY)) || [];
       messages.push(newMessage);
 

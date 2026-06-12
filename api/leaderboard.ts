@@ -1,6 +1,19 @@
 import { Redis } from '@upstash/redis';
 
-const kv = Redis.fromEnv();
+let kvClient: Redis | null = null;
+
+function getRedis() {
+  if (kvClient) return kvClient;
+  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  
+  if (!url || !token) {
+    throw new Error('Redis configuration missing. Check Vercel environment variables.');
+  }
+  
+  kvClient = new Redis({ url, token });
+  return kvClient;
+}
 
 const MAX_ENTRIES = 10;
 const LEADERBOARD_KEY = 'wm_snake:leaderboard';
@@ -8,6 +21,7 @@ const LEADERBOARD_KEY = 'wm_snake:leaderboard';
 export default async function handler(req: any, res: any) {
   if (req.method === 'GET') {
     try {
+      const kv = getRedis();
       const entries = await kv.get(LEADERBOARD_KEY) || [];
       return res.status(200).json(entries);
     } catch (error) {
@@ -30,6 +44,7 @@ export default async function handler(req: any, res: any) {
       const timestamp = Date.now();
       const newId = `${timestamp}-${Math.random().toString(36).slice(2, 7)}`;
 
+      const kv = getRedis();
       let entries: any[] = (await kv.get(LEADERBOARD_KEY)) || [];
       
       const existingIndex = entries.findIndex((e: any) => e.name === name);
