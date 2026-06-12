@@ -4,6 +4,15 @@ import Leaderboard from './Leaderboard.vue';
 import MessageBoard from './MessageBoard.vue';
 import { useLeaderboard } from '../composables/useLeaderboard';
 
+// ====== SVG 內嵌匯入（?raw 讓 Vite 在打包時直接嵌入 SVG 原始碼，不發額外請求）======
+import weiSvg from './wei.svg?raw';
+import mengSvg from './meng.svg?raw';
+import cakeSvg from './cake.svg?raw';
+import heartSvg from './heart.svg?raw';   // 蛇身：紅心 ❤️
+import laptopSvg from './laptop.svg?raw'; // AI 道具：筆電 💻
+import pianoSvg from './piano.svg?raw';   // 鋼琴道具：鍵盤 🎹
+import giftSvg from './gift.svg?raw';     // 禮物道具：禮物 🎁
+
 // ====== Props & Emits ======
 const props = defineProps<{ playerName: string }>();
 const emit = defineEmits<{ logout: [] }>();
@@ -16,15 +25,15 @@ const GRID_SIZE = 20;
 const INITIAL_SPEED = 150;
 const SPECIAL_SPAWN_CHANCE = 0.05;
 
-// 圖片配置（全部使用已驗證可用的 iconify noto: 系列 emoji 圖示）
-const ASSETS = {
-  weiHead: '/wei.svg',
-  mengHead: '/meng.svg',
-  body: 'https://api.iconify.design/noto:red-heart.svg',   // 蛇身：紅心 ❤️
-  cake: '/cake.svg',
-  ai: 'https://api.iconify.design/noto:laptop.svg',         // AI 道具：筆電 💻
-  piano: 'https://api.iconify.design/noto:musical-keyboard.svg', // 鋼琴道具：鍵盤 🎹
-  gift: 'https://api.iconify.design/noto:wrapped-gift.svg'  // 禮物道具：禮物 🎁
+// 圖片配置（全部使用 ?raw 內嵌 SVG，零額外網路請求）
+const ASSETS: Record<string, string> = {
+  weiHead: weiSvg,
+  mengHead: mengSvg,
+  body: heartSvg,
+  cake: cakeSvg,
+  ai: laptopSvg,
+  piano: pianoSvg,
+  gift: giftSvg
 };
 
 const TONGUE_TWISTERS = [
@@ -419,7 +428,7 @@ onUnmounted(() => {
         <div class="char-selection">
           <div class="char-option" :class="{ selected: selectedCharacter === 'wei' }" @click="selectCharacter('wei')">
             <div class="char-img-wrapper">
-              <img :src="ASSETS.weiHead" class="char-img-preview" alt="崴寶" />
+              <div class="char-img-preview" v-html="ASSETS.weiHead"></div>
             </div>
             <p class="char-name">崴寶</p>
             <p class="char-desc">💻 AI 小天才</p>
@@ -429,7 +438,7 @@ onUnmounted(() => {
           </div>
           <div class="char-option" :class="{ selected: selectedCharacter === 'meng' }" @click="selectCharacter('meng')">
             <div class="char-img-wrapper">
-              <img :src="ASSETS.mengHead" class="char-img-preview" alt="孟寶" />
+              <div class="char-img-preview" v-html="ASSETS.mengHead"></div>
             </div>
             <p class="char-name">孟寶</p>
             <p class="char-desc">🎹 鋼琴小天使</p>
@@ -449,13 +458,11 @@ onUnmounted(() => {
           :style="{ width: GRID_SIZE * CELL_SIZE + 'px', height: GRID_SIZE * CELL_SIZE + 'px' }"
         >
           <!-- ★ 蛋糕：改用 transform: translate 定位 -->
-          <div class="game-item food-item" :style="cakeStyle">
-            <img :src="ASSETS.cake" alt="cake" />
+          <div class="game-item food-item" :style="cakeStyle" v-html="ASSETS.cake">
           </div>
 
           <!-- ★ 特殊道具：改用 transform: translate 定位 -->
-          <div v-if="specialItem" class="game-item special-item" :style="specialStyle">
-            <img :src="ASSETS[specialItem.type as keyof typeof ASSETS]" alt="special" />
+          <div v-if="specialItem" class="game-item special-item" :style="specialStyle" v-html="ASSETS[specialItem.type]">
           </div>
 
           <!-- ★ 蛇身：
@@ -470,10 +477,10 @@ onUnmounted(() => {
             :style="snakeStyles[index]"
           >
             <template v-if="index === 0">
-              <img :src="headSrc" class="head-img" />
+              <div class="head-img" v-html="headSrc"></div>
               <span class="char-tag" :style="{ fontSize: tagFontSize }">{{ charLabel }}</span>
             </template>
-            <img v-else :src="ASSETS.body" class="body-img" />
+            <div v-else class="body-img" v-html="ASSETS.body"></div>
           </div>
 
           <Transition name="fade">
@@ -483,7 +490,7 @@ onUnmounted(() => {
           <!-- 百分里程碑大蛋糕 -->
           <Transition name="big-cake-anim">
             <div v-if="showBigCake" class="big-cake-overlay" @click="showBigCake = false">
-              <img :src="ASSETS.cake" class="big-cake-img" alt="里程碑蛋糕" />
+              <div class="big-cake-img" v-html="ASSETS.cake"></div>
               <div class="big-cake-score">🎉 {{ bigCakeMilestone }} 分！</div>
               <div class="big-cake-msg">崴孟好厲害 💕</div>
             </div>
@@ -789,11 +796,19 @@ h1 {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  object-fit: cover;
+  overflow: hidden;
   background: white;
   border: 3px solid #ffb6c1;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 15px rgba(255, 182, 193, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.char-img-preview :deep(svg) {
+  width: 100%;
+  height: 100%;
 }
 
 .char-option.selected .char-img-preview {
@@ -905,10 +920,12 @@ h1 {
   transition-timing-function: linear;
 }
 
-.game-item img {
+.game-item img,
+.game-item :deep(svg) {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  display: block;
 }
 
 /* ★ 移除 filter: drop-shadow 動畫（每幀重算 filter 非常耗效能）
@@ -945,15 +962,36 @@ h1 {
 
 /* ====== 蛇頭 ====== */
 .head-img {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   border: 2px solid #ff69b4;
   background: white;
   box-shadow: 0 0 8px rgba(255, 105, 180, 0.3);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.head-img :deep(svg) {
+  width: 100%;
+  height: 100%;
 }
 
 .body-img {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   will-change: transform;
   animation: heart-beat 1s ease-in-out infinite alternate;
+}
+
+.body-img :deep(svg) {
+  width: 100%;
+  height: 100%;
 }
 
 .char-tag {
@@ -1139,6 +1177,11 @@ h1 {
              cakeWobble 0.8s ease-in-out 0.5s infinite alternate;
   will-change: transform;
   filter: drop-shadow(0 8px 20px rgba(255, 105, 180, 0.35));
+}
+
+.big-cake-img :deep(svg) {
+  width: 100%;
+  height: 100%;
 }
 
 @keyframes cakeBounceIn {
